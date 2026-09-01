@@ -1,31 +1,27 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 
-
-
-print("Step 1")
-
 from routes.auth import auth
-
-print("Step 2")
-
 from routes.chat import chat
-
-print("Step 3")
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret-key"
 
-
 jwt = JWTManager(app) 
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
 
 app.register_blueprint(auth)
 app.register_blueprint(chat)
-
-print("Step 4")
 
 print("Routes:")
 print(app.url_map)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
